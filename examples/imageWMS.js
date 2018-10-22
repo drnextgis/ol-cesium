@@ -11,11 +11,25 @@ import olSourceOSM from 'ol/source/OSM.js';
 import olLayerImage from 'ol/layer/Image.js';
 import olLayerTile from 'ol/layer/Tile.js';
 import olMap from 'ol/Map.js';
+import olSourceTileWMS from 'ol/source/TileWMS.js';
 
-const imageWMSSource = new olSourceImageWMS({
-  url: 'https://demo.boundlessgeo.com/geoserver/wms',
-  params: {'LAYERS': 'topp:states'},
-  ratio: 1
+let imageWMSSource = new olSourceImageWMS({
+        url: 'http://rykovd.nextgis.com/api/component/render/image',
+        params: {
+          'resource': 172
+        },
+        ratio: 1,
+        imageLoadFunction: function(image, src) {
+          var url = src.split("?")[0];
+          var query = src.split("?")[1];
+          var queryObject = Qs.parse(query);
+          url = url + "?resource=" + queryObject.resource +
+                      "&extent=" + queryObject.BBOX +
+                      "&size=" + queryObject.WIDTH + "," + queryObject.HEIGHT;
+
+          if (image) { image.getImage().src = url; }
+          return url;
+        }
 });
 
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0MzAyNzUyYi0zY2QxLTQxZDItODRkOS1hNTA3MDU3ZTBiMDUiLCJpZCI6MjU0MSwiaWF0IjoxNTMzNjI1MTYwfQ.oHn1SUWJa12esu7XUUtEoc1BbEbuZpRocLetw6M6_AA';
@@ -25,7 +39,6 @@ const ol2d = new olMap({
       source: new olSourceOSM()
     }),
     new olLayerImage({
-      extent: [-13884991, 2870341, -7455066, 6338219],
       source: imageWMSSource
     })
   ],

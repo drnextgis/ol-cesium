@@ -370,8 +370,7 @@ exports.tileLayerToImageryLayer = function(olMap, olLayer, viewProj) {
   let source = olLayer.getSource();
 
   // Convert ImageWMS to TileWMS
-  if (source instanceof olSourceImageWMS && source.getUrl() &&
-    source.getImageLoadFunction() === defaultImageLoadFunction) {
+  if (source instanceof olSourceImageWMS && source.getUrl()) {
     const sourceProps = {
       'olcs.proxy': source.get('olcs.proxy'),
       'olcs.extent': source.get('olcs.extent'),
@@ -382,7 +381,8 @@ exports.tileLayerToImageryLayer = function(olMap, olLayer, viewProj) {
       url: source.getUrl(),
       attributions: source.getAttributions(),
       projection: source.getProjection(),
-      params: source.getParams()
+      params: source.getParams(),
+      tileLoadFunction: source.getImageLoadFunction()
     });
     source.setProperties(sourceProps);
   }

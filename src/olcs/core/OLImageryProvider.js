@@ -3,6 +3,7 @@
  */
 import {get as getProjection} from 'ol/proj.js';
 import olcsUtil from '../util.js';
+import TileImage from 'ol/source/TileImage.js';
 
 class OLImageryProvider /* should not extend Cesium.ImageryProvider */ {
   /**
@@ -150,6 +151,9 @@ class OLImageryProvider /* should not extend Cesium.ImageryProvider */ {
           [z_, x, y_], 1, this.projection_);
       if (this.proxy_) {
         url = this.proxy_.getURL(url);
+      }
+      if (this.source_.tileLoadFunction !== TileImage.defaultTileLoadFunction) {
+        url = this.source_.tileLoadFunction(none, url);
       }
       return url ? Cesium.ImageryProvider.loadImage(this, url) : this.emptyCanvas_;
     } else {
